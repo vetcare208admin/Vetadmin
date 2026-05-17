@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './src/app.module';
@@ -5,27 +6,36 @@ import { AppModule } from './src/app.module';
 let cachedServer: any;
 
 export default async (req: any, res: any) => {
-    if (!cachedServer) {
-        const app = await NestFactory.create(AppModule);
+    try {
+        if (!cachedServer) {
+            const app = await NestFactory.create(AppModule);
 
-        app.useGlobalPipes(
-            new ValidationPipe({
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                transform: true,
-            }),
-        );
+            app.useGlobalPipes(
+                new ValidationPipe({
+                    whitelist: true,
+                    forbidNonWhitelisted: true,
+                    transform: true,
+                }),
+            );
 
-        app.enableCors({
-            origin: '*', // For production, replace with frontend URL
-            credentials: true,
+            app.enableCors({
+                origin: '*',
+                credentials: true,
+            });
+
+            app.setGlobalPrefix('v1');
+            await app.init();
+            cachedServer = app.getHttpAdapter().getInstance();
+        }
+
+        return cachedServer(req, res);
+    } catch (error: any) {
+        console.error('Serverless bootstrap error:', error);
+        return res.status(500).json({
+            error: 'Backend Initialization Failed',
+            message: error.message,
+            tip: 'Ensure your DATABASE_URL is correctly set in Vercel Project Settings.'
         });
-
-        app.setGlobalPrefix('v1');
-        await app.init();
-        cachedServer = app.getHttpAdapter().getInstance();
     }
-
-    return cachedServer(req, res);
 };
 // Triggering production build v2
