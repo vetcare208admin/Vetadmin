@@ -8,17 +8,26 @@ import { format } from 'date-fns';
 
 export default function LabInventoryPage() {
     const [inventory, setInventory] = useState<any[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // In a real app we'd fetch inventory
-        // labApi.getInventory().then(...)
-        setInventory([
-            { id: '1', itemName: 'CBC Reagent Pack', category: 'Reagents', quantity: 12, unit: 'packs', reorderLevel: 20, status: 'low' },
-            { id: '2', itemName: 'Microscope Slides', category: 'Consumables', quantity: 500, unit: 'pcs', reorderLevel: 100, status: 'ok' },
-            { id: '3', itemName: 'Chemistry Analyzer Solution', category: 'Reagents', quantity: 5, unit: 'bottles', reorderLevel: 10, status: 'critical' },
-            { id: '4', itemName: 'Syringes 5ml', category: 'Consumables', quantity: 150, unit: 'pcs', reorderLevel: 50, status: 'ok' },
-        ]);
+        const fetchInventory = async () => {
+            try {
+                const response = await labApi.getInventory();
+                const data = response.data.map((item: any) => {
+                    let status = 'ok';
+                    if (item.quantity === 0) status = 'critical';
+                    else if (item.quantity <= item.reorderLevel) status = 'low';
+                    return { ...item, status };
+                });
+                setInventory(data);
+            } catch (error) {
+                console.error("Failed to fetch inventory:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchInventory();
     }, []);
 
     return (
@@ -98,8 +107,8 @@ export default function LabInventoryPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 text-[10px] font-bold rounded-full uppercase ${item.status === 'ok' ? 'bg-green-100 text-green-700' :
-                                                item.status === 'low' ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-red-100 text-red-700'
+                                            item.status === 'low' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-red-100 text-red-700'
                                             }`}>
                                             {item.status === 'ok' ? 'Adequate' : item.status}
                                         </span>

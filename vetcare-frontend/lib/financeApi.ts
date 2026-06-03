@@ -9,4 +9,5 @@ export const financeApi = {
     getExpenses: () => api.get('/finance/expenses'),
     createExpense: (data: any) => api.post('/finance/expenses', data),
     getRevenueReport: (params: any) => api.get('/finance/reports/revenue', { params }),
+    getOverview: (branchId?: string) => api.get('/finance/overview', { params: { branchId } }),
 };

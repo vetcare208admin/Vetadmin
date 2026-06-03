@@ -65,7 +65,7 @@ export default function RoleGateway() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white overflow-x-hidden">
             {/* Background Decoration */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary-50/50 blur-3xl" />
