@@ -10,7 +10,7 @@ export default async (req: any, res: any) => {
             console.log('--- START BOOTSTRAP ---');
 
             // Lazy load AppModule
-            const { AppModule } = await import('./src/app.module');
+            const { AppModule } = await import('../src/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
