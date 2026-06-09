@@ -1,7 +1,15 @@
-import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-// AppModule is imported lazily inside the handler
+import { Module, Controller, Get } from '@nestjs/common';
+
+@Controller('dummy')
+class DummyController {
+    @Get()
+    ping() { return { status: 'dummy-ok' }; }
+}
+
+@Module({
+    controllers: [DummyController],
+})
+class DummyModule { }
 
 let cachedServer: any;
 
