@@ -1,36 +1,16 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Module, Controller, Get } from '@nestjs/common';
-
-@Controller('dummy')
-class DummyController {
-    @Get()
-    ping() { return { status: 'dummy-ok', message: 'NestJS is working!' }; }
-}
-
-@Module({
-    controllers: [DummyController],
-})
-class DummyModule { }
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './src/app.module';
 
 let cachedServer: any;
 
 export default async (req: any, res: any) => {
-    // DIAGNOSTIC FALLBACK
-    if (req.url === '/v1/ping-express') {
-        return res.status(200).json({
-            status: 'express-ok',
-            message: 'Vercel Node runtime is working',
-            nodeVersion: process.version,
-            env: process.env.NODE_ENV
-        });
-    }
-
     try {
         if (!cachedServer) {
-            console.log('Bootstrapping NestJS (Dummy) for Vercel...');
+            console.log('Bootstrapping Horus Vet for Vercel...');
 
-            const app = await NestFactory.create(DummyModule, {
+            const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
             });
 
@@ -61,7 +41,7 @@ export default async (req: any, res: any) => {
             error: 'Backend Initialization Failed',
             message: error.message,
             stack: error.stack,
-            tip: 'Check Vercel Build Logs.'
+            tip: 'Check Vercel Build Logs and Environment Variables.'
         });
     }
 };
