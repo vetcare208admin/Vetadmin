@@ -5,7 +5,7 @@ import { ValidationPipe, Module, Controller, Get } from '@nestjs/common';
 @Controller('dummy')
 class DummyController {
     @Get()
-    ping() { return { status: 'dummy-ok' }; }
+    ping() { return { status: 'dummy-ok', message: 'NestJS is working!' }; }
 }
 
 @Module({
@@ -16,7 +16,7 @@ class DummyModule { }
 let cachedServer: any;
 
 export default async (req: any, res: any) => {
-    // DIAGNOSTIC FALLBACK: If we can't bootstrap NestJS, we return a simple express response
+    // DIAGNOSTIC FALLBACK
     if (req.url === '/v1/ping-express') {
         return res.status(200).json({
             status: 'express-ok',
@@ -28,12 +28,9 @@ export default async (req: any, res: any) => {
 
     try {
         if (!cachedServer) {
-            console.log('Bootstrapping NestJS for Vercel...');
+            console.log('Bootstrapping NestJS (Dummy) for Vercel...');
 
-            // Lazy load AppModule to catch top-level module errors
-            const { AppModule } = await import('./src/app.module');
-
-            const app = await NestFactory.create(AppModule, {
+            const app = await NestFactory.create(DummyModule, {
                 logger: ['error', 'warn', 'log'],
             });
 
@@ -52,9 +49,7 @@ export default async (req: any, res: any) => {
 
             app.setGlobalPrefix('v1');
 
-            console.log('Initializing app...');
             await app.init();
-            console.log('App initialized successfully');
 
             cachedServer = app.getHttpAdapter().getInstance();
         }
@@ -66,8 +61,7 @@ export default async (req: any, res: any) => {
             error: 'Backend Initialization Failed',
             message: error.message,
             stack: error.stack,
-            tip: 'Check Vercel Build Logs and ensure all environment variables are set.'
+            tip: 'Check Vercel Build Logs.'
         });
     }
 };
-// Triggering production build v2
