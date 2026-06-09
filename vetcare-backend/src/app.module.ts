@@ -13,6 +13,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { FilesModule } from './modules/files/files.module';
 import { QueueModule } from './modules/queue/queue.module';
+import { AppController } from './app.controller';
 import { PrismaService } from './prisma/prisma.service';
 import { envValidationSchema } from './config/env.validation';
 
@@ -47,6 +48,7 @@ import { envValidationSchema } from './config/env.validation';
     FilesModule,
     QueueModule,
   ],
+  controllers: [AppController],
   providers: [PrismaService],
 })
-export class AppModule {}
+export class AppModule { }
