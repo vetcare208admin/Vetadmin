@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
             require('reflect-metadata');
             const { NestFactory } = require('@nestjs/core');
             const { ValidationPipe } = require('@nestjs/common');
-            const { AppModule } = require('../dist/app.module');
+            const { AppModule } = require('./dist/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
