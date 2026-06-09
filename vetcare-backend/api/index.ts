@@ -1,16 +1,20 @@
-import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+// ZERO top-level imports — all requires are inside the handler
+// so that any missing module is caught and reported in the response.
 
 let cachedServer: any;
 
 export default async (req: any, res: any) => {
     try {
         if (!cachedServer) {
-            console.log('--- START BOOTSTRAP ---');
+            // Step 1: reflect-metadata
+            require('reflect-metadata');
 
-            // Lazy load AppModule
-            const { AppModule } = await import('../src/app.module');
+            // Step 2: NestJS core
+            const { NestFactory } = require('@nestjs/core');
+            const { ValidationPipe } = require('@nestjs/common');
+
+            // Step 3: AppModule (lazy)
+            const { AppModule } = require('../src/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
@@ -24,28 +28,19 @@ export default async (req: any, res: any) => {
                 }),
             );
 
-            app.enableCors({
-                origin: '*',
-                credentials: true,
-            });
-
+            app.enableCors({ origin: '*', credentials: true });
             app.setGlobalPrefix('v1');
-
             await app.init();
 
             cachedServer = app.getHttpAdapter().getInstance();
-            console.log('--- BOOTSTRAP SUCCESS ---');
         }
 
         return cachedServer(req, res);
     } catch (error: any) {
-        console.error('--- BOOTSTRAP CRITICAL ERROR ---');
-        console.error('Error:', error.message);
-
         return res.status(500).json({
-            error: 'Backend Initialization Failed',
+            error: 'Bootstrap Failed',
             message: error.message,
-            tip: 'Check Vercel Build Logs and ensure all environment variables are set.'
+            stack: error.stack?.split('\n').slice(0, 5),
         });
     }
 };
