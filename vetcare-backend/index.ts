@@ -6,9 +6,16 @@ import { AppModule } from './src/app.module';
 let cachedServer: any;
 
 export default async (req: any, res: any) => {
+    // DIAGNOSTIC FALLBACK: If we can't bootstrap NestJS, we return a simple express response
+    if (req.url === '/v1/ping-express') {
+        return res.status(200).json({ status: 'express-ok', message: 'Vercel Node runtime is working' });
+    }
+
     try {
         if (!cachedServer) {
             console.log('Bootstrapping NestJS for Vercel...');
+
+            // Minimal AppModule check - if this fails, the catch block should handle it
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
             });
@@ -27,17 +34,22 @@ export default async (req: any, res: any) => {
             });
 
             app.setGlobalPrefix('v1');
+
+            console.log('Initializing app...');
             await app.init();
+            console.log('App initialized successfully');
+
             cachedServer = app.getHttpAdapter().getInstance();
         }
 
         return cachedServer(req, res);
     } catch (error: any) {
-        console.error('Serverless bootstrap error:', error);
+        console.error('CRITICAL: Serverless bootstrap error:', error);
         return res.status(500).json({
             error: 'Backend Initialization Failed',
             message: error.message,
-            tip: 'Ensure your DATABASE_URL is correctly set in Vercel Project Settings.'
+            stack: error.stack,
+            tip: 'Check Vercel Build Logs and ensure all environment variables are set.'
         });
     }
 };
