@@ -11,11 +11,21 @@ import { SmsProcessor } from './processors/sms.processor';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const redisUrl = configService.get<string>('REDIS_URL');
-        // If Redis URL is provided, use it as the redis connection string
-        // Otherwise, fall back to a simple limiter configuration
-        return redisUrl 
-          ? { redis: redisUrl as string }
-          : { limiter: { max: 10, duration: 1000 } };
+        if (!redisUrl) {
+          // If no Redis URL is provided, we return a configuration that doesn't 
+          // attempt to connect to a real Redis, or we disable the queue.
+          // Bull requires a connection by default, so we use a dummy one if needed
+          // or just provide the limiter.
+          return {
+            redis: {
+              host: 'localhost',
+              port: 6379,
+              maxRetriesPerRequest: 0,
+              enableReadyCheck: false,
+            }
+          };
+        }
+        return { redis: redisUrl as string };
       },
       inject: [ConfigService],
     }),
@@ -29,4 +39,4 @@ import { SmsProcessor } from './processors/sms.processor';
   providers: [QueueService, EmailProcessor, SmsProcessor],
   exports: [QueueService, BullModule],
 })
-export class QueueModule {}
+export class QueueModule { }

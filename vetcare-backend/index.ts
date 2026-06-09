@@ -8,7 +8,10 @@ let cachedServer: any;
 export default async (req: any, res: any) => {
     try {
         if (!cachedServer) {
-            const app = await NestFactory.create(AppModule);
+            console.log('Bootstrapping NestJS for Vercel...');
+            const app = await NestFactory.create(AppModule, {
+                logger: ['error', 'warn', 'log'],
+            });
 
             app.useGlobalPipes(
                 new ValidationPipe({
