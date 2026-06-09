@@ -22,8 +22,8 @@ import { envValidationSchema } from './config/env.validation';
     // Global configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      // envFilePath: ['.env', '.env.local'],
-      // validationSchema: envValidationSchema,
+      envFilePath: ['.env', '.env.local'],
+      validationSchema: envValidationSchema,
     }),
 
     // Rate limiting

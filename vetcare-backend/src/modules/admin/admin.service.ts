@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UserRole } from '@/common/enums';
+import { UserRole } from '../../../common/enums';
 
 @Injectable()
 export class AdminService {

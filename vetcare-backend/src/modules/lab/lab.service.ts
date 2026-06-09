@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { LabOrderStatus, LabResultFlag } from '@/common/enums';
+import { LabOrderStatus, LabResultFlag } from '../../../common/enums';
 
 @Injectable()
 export class LabService {

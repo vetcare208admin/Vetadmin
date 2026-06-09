@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { AppointmentStatus } from '@/common/enums';
+import { AppointmentStatus } from '../../../common/enums';
 
 @Injectable()
 export class AppointmentsService {

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { LeaveStatus, LeaveType } from '@/common/enums';
+import { LeaveStatus, LeaveType } from '../../../common/enums';
 
 @Injectable()
 export class HrService {
