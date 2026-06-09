@@ -9,8 +9,8 @@ export default async (req: any, res: any) => {
         if (!cachedServer) {
             console.log('--- START BOOTSTRAP ---');
 
-            // Lazy load AppModule to isolate import-level crashes
-            const { AppModule } = await import('../src/app.module');
+            // Lazy load AppModule
+            const { AppModule } = await import('./src/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
