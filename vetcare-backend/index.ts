@@ -7,10 +7,11 @@ let cachedServer: any;
 export default async (req: any, res: any) => {
     try {
         if (!cachedServer) {
-            console.log('--- START BOOTSTRAP (v3-TS) ---');
+            console.log('--- START BOOTSTRAP (v4-SRC) ---');
 
-            // Import from source, TypeScript will be handled by @vercel/node
-            const { AppModule } = await import('../src/app.module');
+            // LAZY LOAD FROM SOURCE (src/)
+            // @vercel/node will handle the TypeScript compilation
+            const { AppModule } = await import('./src/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
@@ -41,7 +42,6 @@ export default async (req: any, res: any) => {
     } catch (error: any) {
         console.error('--- BOOTSTRAP CRITICAL ERROR ---');
         console.error('Error:', error.message);
-        console.error('Stack:', error.stack);
 
         return res.status(500).json({
             error: 'Backend Initialization Failed',
