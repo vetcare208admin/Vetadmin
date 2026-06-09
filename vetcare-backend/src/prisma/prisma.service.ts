@@ -16,14 +16,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   async onModuleInit() {
-    try {
-      console.log('Connecting to Database...');
-      await this.$connect();
-      console.log('Database connected successfully');
-    } catch (error) {
-      console.error('CRITICAL: Failed to connect to Database:', error.message);
-      // Still not throwing to allow the app to bootstrap for diagnostics
-    }
+    // We intentionally DON'T await this.$connect() here.
+    // NestJS bootstrap will continue immediately.
+    // Prisma will connect automatically on the first query.
+    console.log('PrismaService: Bootstrap complete (lazy connection enabled)');
   }
 
   async onModuleDestroy() {
