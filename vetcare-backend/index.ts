@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './src/app.module';
+// AppModule is imported lazily inside the handler
 
 let cachedServer: any;
 
@@ -15,7 +15,9 @@ export default async (req: any, res: any) => {
         if (!cachedServer) {
             console.log('Bootstrapping NestJS for Vercel...');
 
-            // Minimal AppModule check - if this fails, the catch block should handle it
+            // Lazy load AppModule to catch top-level module errors
+            const { AppModule } = await import('./src/app.module');
+
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
             });
