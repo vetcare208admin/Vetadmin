@@ -4,7 +4,7 @@
   "description": "VetCare Backend API - NestJS",
   "private": true,
   "scripts": {
-    "build:prod": "nest build",
+    "build": "echo 'Skipping build, using @vercel/node runtime'",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
