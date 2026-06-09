@@ -1,4 +1,6 @@
-import { Module, Controller, Get } from '@nestjs/common';
+import 'reflect-metadata';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, Module, Controller, Get } from '@nestjs/common';
 
 @Controller('dummy')
 class DummyController {
