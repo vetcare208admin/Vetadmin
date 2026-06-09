@@ -8,7 +8,12 @@ let cachedServer: any;
 export default async (req: any, res: any) => {
     // DIAGNOSTIC FALLBACK: If we can't bootstrap NestJS, we return a simple express response
     if (req.url === '/v1/ping-express') {
-        return res.status(200).json({ status: 'express-ok', message: 'Vercel Node runtime is working' });
+        return res.status(200).json({
+            status: 'express-ok',
+            message: 'Vercel Node runtime is working',
+            nodeVersion: process.version,
+            env: process.env.NODE_ENV
+        });
     }
 
     try {
