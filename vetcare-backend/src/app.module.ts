@@ -49,6 +49,6 @@ import { envValidationSchema } from './config/env.validation';
     // QueueModule,
   ],
   controllers: [AppController],
-  providers: [PrismaService],
+  providers: [],
 })
 export class AppModule { }
