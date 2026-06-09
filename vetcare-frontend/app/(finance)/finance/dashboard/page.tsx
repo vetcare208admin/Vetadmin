@@ -24,7 +24,9 @@ export default function FinanceDashboard() {
         stats: {
             totalRevenue: 22550,
             outstanding: 4200,
-            monthlyGrowth: 12.5,
+            expenses: 12000,
+            profit: 10550,
+            growth: 12.5,
             pendingInvoices: 8,
         }
     });

@@ -12,7 +12,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 @Roles(UserRole.ACCOUNTANT, UserRole.BRANCH_ADMIN, UserRole.SUPER_ADMIN)
 @ApiBearerAuth('JWT-auth')
 export class FinanceController {
-  constructor(private readonly financeService: FinanceService) {}
+  constructor(private readonly financeService: FinanceService) { }
 
   @Post('invoices')
   async createInvoice(@Body() data: any) {
@@ -67,5 +67,10 @@ export class FinanceController {
   @Get('price-catalog')
   async getPriceCatalog(@Query('branchId') branchId: string) {
     return this.financeService.getPriceCatalog(branchId);
+  }
+
+  @Get('overview')
+  async getFinancialOverview(@Query('branchId') branchId?: string) {
+    return this.financeService.getFinancialOverview(branchId);
   }
 }
