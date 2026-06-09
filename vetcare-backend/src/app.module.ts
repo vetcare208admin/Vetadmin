@@ -30,8 +30,8 @@ import { PrismaService } from './prisma/prisma.service';
       },
     ]),
 
-    AuthModule,
-    UsersModule,
+    // AuthModule,
+    // UsersModule,
     // CustomersModule,
     // AppointmentsModule,
     // VetModule,
