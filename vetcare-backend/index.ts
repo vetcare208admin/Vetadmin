@@ -8,8 +8,6 @@ let cachedServer: any;
 export default async (req: any, res: any) => {
     try {
         if (!cachedServer) {
-            console.log('Bootstrapping Horus Vet for Vercel...');
-
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
             });
@@ -41,7 +39,7 @@ export default async (req: any, res: any) => {
             error: 'Backend Initialization Failed',
             message: error.message,
             stack: error.stack,
-            tip: 'Check Vercel Build Logs and Environment Variables.'
+            tip: 'Check Vercel Build Logs and ensure all environment variables are set.'
         });
     }
 };
