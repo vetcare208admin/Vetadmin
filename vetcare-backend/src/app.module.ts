@@ -12,7 +12,6 @@ import { HrModule } from './modules/hr/hr.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { FilesModule } from './modules/files/files.module';
-import { QueueModule } from './modules/queue/queue.module';
 import { AppController } from './app.controller';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -30,18 +29,17 @@ import { PrismaService } from './prisma/prisma.service';
       },
     ]),
 
-    // AuthModule,
-    // UsersModule,
-    // CustomersModule,
-    // AppointmentsModule,
-    // VetModule,
-    // LabModule,
-    // FinanceModule,
-    // HrModule,
-    // AdminModule,
-    // NotificationsModule,
-    // FilesModule,
-    // QueueModule,
+    AuthModule,
+    UsersModule,
+    CustomersModule,
+    AppointmentsModule,
+    VetModule,
+    LabModule,
+    FinanceModule,
+    HrModule,
+    AdminModule,
+    NotificationsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],
