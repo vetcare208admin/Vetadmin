@@ -36,8 +36,8 @@ async function bootstrap() {
 
   // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('VetCare Platform API')
-    .setDescription('Complete API documentation for the VetCare veterinary platform')
+    .setTitle('Horus Vet Platform API')
+    .setDescription('Complete API documentation for the Horus Vet veterinary platform')
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -71,7 +71,7 @@ async function bootstrap() {
   const port = configService.get('PORT', 3001);
   await app.listen(port);
 
-  console.log(`🚀 VetCare API running on http://localhost:${port}`);
+  console.log(`🚀 Horus Vet API running on http://localhost:${port}`);
   console.log(`📚 Swagger docs at http://localhost:${port}/api/docs`);
 }
 

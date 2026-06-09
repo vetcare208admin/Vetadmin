@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'VetCare Platform - Veterinary Management System',
-  description: 'Complete veterinary clinic management platform',
+  title: 'Horus Vet - Premium Veterinary Management',
+  description: 'Enterprise-grade platform for modern veterinary clinics and laboratories.',
 };
 
 export const viewport: Viewport = {

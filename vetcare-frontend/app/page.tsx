@@ -81,7 +81,7 @@ export default function RoleGateway() {
                         <span>Welcome to the Future of Pet Care</span>
                     </div>
                     <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl">
-                        Everything you need for <span className="text-primary-600">VetCare</span> excellence.
+                        Everything you need for <span className="text-primary-600">Horus Vet</span> excellence.
                     </h1>
                     <p className="text-xl text-gray-500 leading-relaxed">
                         A unified platform for clinics, laboratories, and pet owners. Choose your portal to begin.
@@ -157,9 +157,9 @@ export default function RoleGateway() {
                 <div className="mx-auto max-w-7xl px-4 text-center">
                     <div className="flex justify-center items-center gap-2 mb-4">
                         <span className="text-2xl">🐾</span>
-                        <span className="text-xl font-bold text-gray-900 tracking-tight">VetCare</span>
+                        <span className="text-xl font-bold text-gray-900 tracking-tight">Horus Vet</span>
                     </div>
-                    <p className="text-gray-500 text-sm font-medium">© 2026 VetCare Technologies. Empowering Veterinary Professionals Worldwide.</p>
+                    <p className="text-gray-500 text-sm font-medium">© 2026 Horus Vet Technologies. Empowering Veterinary Professionals Worldwide.</p>
                 </div>
             </div>
         </div>

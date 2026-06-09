@@ -81,8 +81,8 @@ export default function Layout({ children }: LayoutProps) {
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
               <Link href="/" className="flex items-center gap-2">
-                <span className="text-2xl">🐾</span>
-                <span className="text-xl font-bold text-primary-600">VetCare</span>
+                <span className="text-2xl">🦅</span>
+                <span className="text-xl font-bold text-primary-600">Horus Vet</span>
               </Link>
             </div>
 
@@ -138,7 +138,7 @@ export default function Layout({ children }: LayoutProps) {
       <footer className="bg-white border-t mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} VetCare Platform. All rights reserved.
+            © {new Date().getFullYear()} Horus Vet Platform. All rights reserved.
           </p>
         </div>
       </footer>
