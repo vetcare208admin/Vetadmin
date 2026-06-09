@@ -107,7 +107,7 @@ export default function RoleGateway() {
                         title="Veterinary Hub"
                         description="Manage patients, schedules, and telemedicine consultations with ease."
                         icon={Stethoscope}
-                        href="/vet/dashboard"
+                        href="/login"
                         colorClass="bg-blue-600"
                         iconBg="bg-blue-600"
                     />
@@ -115,7 +115,7 @@ export default function RoleGateway() {
                         title="Laboratory Portal"
                         description="Track diagnostic orders, inventory reagents, and manage test results."
                         icon={FlaskConical}
-                        href="/lab/dashboard"
+                        href="/login"
                         colorClass="bg-teal-600"
                         iconBg="bg-teal-600"
                     />
@@ -123,7 +123,7 @@ export default function RoleGateway() {
                         title="Business Center"
                         description="Control finances, invoices, and human resources in one place."
                         icon={Building2}
-                        href="/finance/dashboard"
+                        href="/login"
                         colorClass="bg-slate-700"
                         iconBg="bg-slate-700"
                     />
@@ -131,7 +131,7 @@ export default function RoleGateway() {
                         title="Pet Owner Portal"
                         description="Book appointments, manage pet profiles, and view clinic invoices."
                         icon={PawPrint}
-                        href="/dashboard"
+                        href="/login"
                         colorClass="bg-rose-500"
                         iconBg="bg-rose-500"
                     />
@@ -139,7 +139,7 @@ export default function RoleGateway() {
                         title="Platform Control"
                         description="System-wide management of branches, users, and security logs."
                         icon={ShieldCheck}
-                        href="/admin/dashboard"
+                        href="/login"
                         colorClass="bg-primary-600"
                         iconBg="bg-primary-600"
                     />
