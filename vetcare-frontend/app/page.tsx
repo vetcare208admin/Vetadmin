@@ -31,7 +31,7 @@ const RoleCard = ({
 }) => (
     <Link
         href={href}
-        className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-gray-100 flex flex-col items-start"
+        className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 hover:shadow-xl border border-gray-100 flex flex-col items-start active:bg-gray-50"
     >
         <div className={`absolute top-0 right-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full opacity-10 transition-transform duration-500 group-hover:scale-150 ${colorClass}`} />
 
@@ -73,14 +73,14 @@ export default function RoleGateway() {
                 <div className="absolute bottom-[10%] left-[20%] h-[20%] w-[20%] rounded-full bg-rose-50/50 blur-3xl" />
             </div>
 
-            <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+            <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:py-20 sm:px-6 lg:px-8">
                 {/* Header Section */}
                 <div className="mb-16 text-center max-w-3xl mx-auto">
                     <div className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-2 text-primary-700 font-semibold mb-6 animate-pulse">
                         <PawPrint className="h-5 w-5" />
                         <span>Welcome to the Future of Pet Care</span>
                     </div>
-                    <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl">
+                    <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl">
                         Everything you need for <span className="text-primary-600">VetCare</span> excellence.
                     </h1>
                     <p className="text-xl text-gray-500 leading-relaxed">

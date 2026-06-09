@@ -88,12 +88,12 @@ export default function AdminDashboard() {
                                                 <p className="text-sm text-gray-500">{branch.address}</p>
                                             </div>
                                         </div>
-                                        <div className="text-right flex items-center gap-6">
-                                            <div className="text-sm">
+                                        <div className="text-right flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-6">
+                                            <div className="text-sm text-right">
                                                 <p className="font-medium text-gray-900">{branch._count?.users || 0} Users</p>
                                                 <p className="text-gray-500 text-xs">{branch._count?.appointments || 0} Appts</p>
                                             </div>
-                                            <button className="px-3 py-1 text-sm border border-gray-200 rounded-md hover:bg-gray-100 transition">
+                                            <button className="px-3 py-1.5 text-sm border border-gray-200 rounded-md hover:bg-gray-100 transition active:bg-gray-50">
                                                 Manage
                                             </button>
                                         </div>

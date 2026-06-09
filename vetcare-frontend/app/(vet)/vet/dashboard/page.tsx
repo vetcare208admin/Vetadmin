@@ -117,14 +117,14 @@ export default function VetDashboard() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3">
                                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${apt.status === 'pending' ? 'bg-blue-100 text-blue-700' :
-                                                    apt.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                                                        'bg-gray-100 text-gray-700'
+                                                apt.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                                                    'bg-gray-100 text-gray-700'
                                                 }`}>
                                                 {apt.status}
                                             </span>
-                                            <button className="p-1 hover:bg-gray-200 rounded text-gray-400">
+                                            <button className="p-2 hover:bg-gray-200 rounded-full text-gray-400 active:bg-gray-300">
                                                 <ChevronRight size={20} />
                                             </button>
                                         </div>

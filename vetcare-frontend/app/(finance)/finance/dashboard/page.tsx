@@ -136,9 +136,9 @@ export default function FinanceDashboard() {
 
                 {/* Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="font-semibold text-gray-900 mb-6">Revenue Trend (7 Days)</h3>
-                        <div className="h-[300px] w-full">
+                    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 className="font-semibold text-gray-900 mb-6 text-base sm:text-lg">Revenue Trend (7 Days)</h3>
+                        <div className="h-[250px] sm:h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={data.revenueData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -154,9 +154,9 @@ export default function FinanceDashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 className="font-semibold text-gray-900 mb-6">Invoicing Health</h3>
-                        <div className="h-[300px] w-full">
+                    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 className="font-semibold text-gray-900 mb-6 text-base sm:text-lg">Invoicing Health</h3>
+                        <div className="h-[250px] sm:h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={data.revenueData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />

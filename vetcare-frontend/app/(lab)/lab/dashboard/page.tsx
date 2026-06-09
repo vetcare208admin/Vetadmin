@@ -51,7 +51,7 @@ export default function LabDashboard() {
                 </div>
 
                 {/* Kanban Board */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:h-[calc(100vh-200px)]">
                     {columns.map(column => (
                         <div key={column.id} className="flex flex-col bg-gray-50 rounded-xl border border-gray-200">
                             <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white rounded-t-xl">

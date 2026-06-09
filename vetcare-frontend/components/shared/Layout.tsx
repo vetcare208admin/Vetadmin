@@ -71,7 +71,7 @@ export default function Layout({ children }: LayoutProps) {
     <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               <button
@@ -93,10 +93,10 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-2 sm:gap-4">
               {user ? (
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="hidden sm:inline text-sm text-gray-600 font-medium">{user.email}</span>
+                  <span className="hidden lg:inline text-sm text-gray-600 font-medium">{user.email}</span>
                   <button
                     onClick={handleLogout}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm"
+                    className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm active:scale-95"
                   >
                     Logout
                   </button>
@@ -104,7 +104,7 @@ export default function Layout({ children }: LayoutProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors font-medium shadow-sm"
+                  className="px-4 py-2 text-sm text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors font-medium shadow-sm active:scale-95"
                 >
                   Login
                 </Link>
@@ -114,11 +114,11 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t py-4 bg-white animate-in slide-in-from-top duration-200">
-              <div className="flex flex-col gap-1">
+            <div className="md:hidden border-t py-6 bg-white animate-in slide-in-from-top duration-200">
+              <div className="flex flex-col gap-2 px-2">
                 <NavLinks />
                 {user && (
-                  <div className="mt-4 pt-4 border-t px-2">
+                  <div className="mt-6 pt-6 border-t px-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Account</p>
                     <p className="text-sm font-medium text-gray-900 mb-2 truncate">{user.email}</p>
                   </div>
