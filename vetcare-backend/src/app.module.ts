@@ -35,8 +35,8 @@ import { envValidationSchema } from './config/env.validation';
     ]),
 
     // Feature modules
-    AuthModule,
-    UsersModule,
+    // AuthModule,
+    // UsersModule,
     // CustomersModule,
     // AppointmentsModule,
     // VetModule,
