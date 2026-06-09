@@ -1,20 +1,13 @@
-// ZERO top-level imports — all requires are inside the handler
-// so that any missing module is caught and reported in the response.
+// Plain JS entry point — avoids tsconfig.json scope conflicts with @vercel/node
+let cachedServer;
 
-let cachedServer: any;
-
-export default async (req: any, res: any) => {
+module.exports = async (req, res) => {
     try {
         if (!cachedServer) {
-            // Step 1: reflect-metadata
             require('reflect-metadata');
-
-            // Step 2: NestJS core
             const { NestFactory } = require('@nestjs/core');
             const { ValidationPipe } = require('@nestjs/common');
-
-            // Step 3: AppModule (lazy)
-            const { AppModule } = require('../src/app.module');
+            const { AppModule } = require('../dist/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
@@ -36,11 +29,11 @@ export default async (req: any, res: any) => {
         }
 
         return cachedServer(req, res);
-    } catch (error: any) {
+    } catch (error) {
         return res.status(500).json({
             error: 'Bootstrap Failed',
             message: error.message,
-            stack: error.stack?.split('\n').slice(0, 5),
+            stack: error.stack ? error.stack.split('\n').slice(0, 8) : null,
         });
     }
 };
