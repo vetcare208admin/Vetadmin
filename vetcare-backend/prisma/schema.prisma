@@ -1,0 +1,629 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// CORE / AUTH TABLES
+// ============================================
+
+
+model Branch {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String
+  timezone  String   @default("America/New_York")
+  logoUrl   String?  @map("logo_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  users         User[]
+  appointments  Appointment[]
+  invoices      Invoice[]
+  expenses      Expense[]
+  priceCatalogs PriceCatalog[]
+  payrollRuns   PayrollRun[]
+  jobPostings   JobPosting[]
+  labInventories LabInventory[]
+
+  @@map("branches")
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  passwordHash   String    @map("password_hash")
+  role           String
+  branchId       String?   @map("branch_id")
+  isActive       Boolean   @default(true) @map("is_active")
+  lastLogin      DateTime? @map("last_login")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  branch         Branch?          @relation(fields: [branchId], references: [id])
+  customer       Customer?
+  staff          Staff?
+  refreshTokens  RefreshToken[]
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+  appointments   Appointment[]    @relation("VetAppointments")
+  medicalRecords MedicalRecord[]  @relation("VetMedicalRecords")
+  labOrders      LabOrder[]       @relation("VetLabOrders")
+  labResults     LabResult[]      @relation("VetLabResults")
+  leaveApprovals LeaveRequest[]   @relation("LeaveApprover")
+  payslips       Payslip[]        @relation("PayslipViewer")
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revoked   Boolean   @default(false)
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  permissions String     // JSONB array of permission strings
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+// ============================================
+// CUSTOMER & APPOINTMENT TABLES
+// ============================================
+
+model Customer {
+  id                 String   @id @default(uuid())
+  userId             String   @unique @map("user_id")
+  fullName           String   @map("full_name")
+  phone              String
+  address            String?
+  emergencyContact   String?  @map("emergency_contact")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pets               Pet[]
+  invoices           Invoice[]
+  insuranceClaims    InsuranceClaim[]
+
+  @@map("customers")
+}
+
+model Pet {
+  id          String   @id @default(uuid())
+  customerId  String   @map("customer_id")
+  name        String
+  species     String   // dog, cat, bird, etc.
+  breed       String?
+  dob         DateTime? // date of birth
+  weight      Float?
+  microchipNo String?  @map("microchip_no")
+  photoUrl    String?  @map("photo_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  customer       Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  appointments   Appointment[]
+  medicalRecords MedicalRecord[]
+  labOrders      LabOrder[]
+  radiologyFiles RadiologyFile[]
+
+  @@map("pets")
+}
+
+model Appointment {
+  id           String             @id @default(uuid())
+  petId        String             @map("pet_id")
+  vetId        String             @map("vet_id")
+  branchId     String             @map("branch_id")
+  scheduledAt  DateTime           @map("scheduled_at")
+  type         String             // consultation, surgery, vaccination, etc.
+  status       String  @default("pending")
+  notes        String?
+  room         String?
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+  deletedAt    DateTime?          @map("deleted_at")
+
+  pet          Pet                @relation(fields: [petId], references: [id])
+  vet          User               @relation("VetAppointments", fields: [vetId], references: [id])
+  branch       Branch             @relation(fields: [branchId], references: [id])
+  reminders    AppointmentReminder[]
+  medicalRecord MedicalRecord?
+
+  @@map("appointments")
+}
+
+model AppointmentReminder {
+  id            String    @id @default(uuid())
+  appointmentId String    @map("appointment_id")
+  channel       String    // email, sms, push
+  sentAt        DateTime? @map("sent_at")
+  status        String    @default("pending") // pending, sent, failed
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("appointment_reminders")
+}
+
+model VetSchedule {
+  id         String   @id @default(uuid())
+  vetId      String   @map("vet_id")
+  dayOfWeek  Int      @map("day_of_week") // 0=Sunday, 6=Saturday
+  startTime  String   @map("start_time") // "09:00"
+  endTime    String   @map("end_time")   // "17:00"
+  isAvailable Boolean @default(true) @map("is_available")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([vetId, dayOfWeek])
+  @@map("vet_schedules")
+}
+
+model ScheduleBlock {
+  id        String   @id @default(uuid())
+  vetId     String   @map("vet_id")
+  date      DateTime // specific date for the block
+  startTime String   @map("start_time")
+  endTime   String   @map("end_time")
+  reason    String   // vacation, meeting, training, etc.
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("schedule_blocks")
+}
+
+// ============================================
+// MEDICAL / LAB TABLES
+// ============================================
+
+model MedicalRecord {
+  id            String    @id @default(uuid())
+  petId         String    @map("pet_id")
+  vetId         String    @map("vet_id")
+  appointmentId String?   @unique @map("appointment_id")
+  visitDate     DateTime  @map("visit_date")
+  chiefComplaint String?  @map("chief_complaint")
+  diagnosis     String?
+  notes         String?
+  followUpDate  DateTime? @map("follow_up_date")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  pet           Pet       @relation(fields: [petId], references: [id])
+  vet           User      @relation("VetMedicalRecords", fields: [vetId], references: [id])
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  prescriptions Prescription[]
+  labOrders     LabOrder[]
+  radiologyFiles RadiologyFile[]
+
+  @@map("medical_records")
+}
+
+model Prescription {
+  id               String   @id @default(uuid())
+  medicalRecordId  String   @map("medical_record_id")
+  drugName         String   @map("drug_name")
+  dose             String
+  frequency        String
+  duration         String
+  notes            String?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
+
+  @@map("prescriptions")
+}
+
+model LabOrder {
+  id        String        @id @default(uuid())
+  petId     String        @map("pet_id")
+  vetId     String        @map("vet_id")
+  tests     String          // JSONB array of test names
+  priority  String        @default("normal") // low, normal, high, urgent
+  status    String @default("pending")
+  notes     String?
+  orderedAt DateTime      @default(now()) @map("ordered_at")
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  deletedAt DateTime?     @map("deleted_at")
+
+  pet         Pet         @relation(fields: [petId], references: [id])
+  vet         User        @relation("VetLabOrders", fields: [vetId], references: [id])
+  medicalRecord MedicalRecord? @relation(fields: [medicalRecordId], references: [id])
+  medicalRecordId String? @map("medical_record_id")
+  samples     LabSample[]
+  results     LabResult[]
+
+  @@map("lab_orders")
+}
+
+model LabSample {
+  id          String   @id @default(uuid())
+  orderId     String   @map("order_id")
+  sampleType  String   @map("sample_type") // blood, urine, tissue, etc.
+  collectedAt DateTime? @map("collected_at")
+  collectedBy String?  @map("collected_by")
+  barcode     String   @unique
+  status      String   @default("pending") // pending, collected, processing, completed
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  order LabOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  results LabResult[]
+
+  @@map("lab_samples")
+}
+
+model LabResult {
+  id          String         @id @default(uuid())
+  orderId     String         @map("order_id")
+  sampleId    String?        @map("sample_id")
+  testName    String         @map("test_name")
+  value       String
+  unit        String?
+  refRange    String?        @map("ref_range")
+  flag        String  @default("normal")
+  resultAt    DateTime       @default(now()) @map("result_at")
+  verifiedBy  String?        @map("verified_by")
+  verifiedAt  DateTime?      @map("verified_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  order  LabOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sample LabSample? @relation(fields: [sampleId], references: [id])
+  vet    User?      @relation("VetLabResults", fields: [verifiedBy], references: [id])
+
+  @@map("lab_results")
+}
+
+model LabInventory {
+  id           String   @id @default(uuid())
+  branchId     String   @map("branch_id")
+  itemName     String   @map("item_name")
+  category     String   // reagent, consumable, equipment, etc.
+  quantity     Int
+  unit         String   // ml, mg, units, pieces, etc.
+  reorderLevel Int      @map("reorder_level")
+  supplier     String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@map("lab_inventory")
+}
+
+model RadiologyFile {
+  id               String   @id @default(uuid())
+  petId            String   @map("pet_id")
+  medicalRecordId  String   @map("medical_record_id")
+  fileUrl          String   @map("file_url")
+  fileType         String   @map("file_type") // xray, ultrasound, mri, etc.
+  takenAt          DateTime @default(now()) @map("taken_at")
+  notes            String?
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  pet           Pet           @relation(fields: [petId], references: [id], onDelete: Cascade)
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
+
+  @@map("radiology_files")
+}
+
+// ============================================
+// FINANCE TABLES
+// ============================================
+
+model Invoice {
+  id         String       @id @default(uuid())
+  customerId String       @map("customer_id")
+  branchId   String       @map("branch_id")
+  status     String @default("draft")
+  total      Float      
+  tax        Float       @default(0)
+  discount   Float       @default(0)
+  dueDate    DateTime     @map("due_date")
+  paidAt     DateTime?    @map("paid_at")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  deletedAt  DateTime?    @map("deleted_at")
+
+  customer Customer       @relation(fields: [customerId], references: [id])
+  branch   Branch         @relation(fields: [branchId], references: [id])
+  items    InvoiceItem[]
+  payments Payment[]
+  insuranceClaims InsuranceClaim[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String   @map("invoice_id")
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float  @map("unit_price") 
+  total       Float  
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id         String        @id @default(uuid())
+  invoiceId  String        @map("invoice_id")
+  amount     Float       
+  method     String
+  gatewayRef String?       @map("gateway_ref") // Stripe payment ID, etc.
+  status     String @default("pending")
+  paidAt     DateTime?     @map("paid_at")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+
+  @@map("payments")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  branchId    String   @map("branch_id")
+  category    String   // supplies, utilities, rent, etc.
+  amount      Float  
+  vendor      String?
+  description String?
+  receiptUrl  String?  @map("receipt_url")
+  recordedBy  String   @map("recorded_by")
+  date        DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@map("expenses")
+}
+
+model InsuranceClaim {
+  id            String              @id @default(uuid())
+  customerId    String              @map("customer_id")
+  invoiceId     String              @map("invoice_id")
+  insurer       String
+  policyNo      String              @map("policy_no")
+  claimedAmount Float             @map("claimed_amount") 
+  status        String @default("draft")
+  submittedAt   DateTime?           @map("submitted_at")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  invoice  Invoice  @relation(fields: [invoiceId], references: [id])
+
+  @@map("insurance_claims")
+}
+
+model PriceCatalog {
+  id           String   @id @default(uuid())
+  branchId     String   @map("branch_id")
+  serviceName  String   @map("service_name")
+  category     String   // consultation, surgery, lab, etc.
+  basePrice    Float  @map("base_price") 
+  taxRate      Float  @map("tax_rate") @default(0) 
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@map("price_catalog")
+}
+
+// ============================================
+// HR TABLES
+// ============================================
+
+model Staff {
+  id            String        @id @default(uuid())
+  userId        String        @unique @map("user_id")
+  employeeNo    String        @unique @map("employee_no")
+  department    String
+  position      String
+  hireDate      DateTime      @map("hire_date")
+  contractType  String  @map("contract_type")
+  salary        Float       
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  deletedAt     DateTime?     @map("deleted_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attendance    Attendance[]
+  leaveRequests LeaveRequest[]
+  certifications Certification[]
+  payslips      Payslip[]
+
+  @@map("staff")
+}
+
+model PayrollRun {
+  id            String   @id @default(uuid())
+  branchId      String   @map("branch_id")
+  payPeriodStart DateTime @map("pay_period_start")
+  payPeriodEnd   DateTime @map("pay_period_end")
+  status        String   @default("draft") // draft, pending, approved, paid
+  totalGross    Float  @map("total_gross") 
+  totalNet      Float  @map("total_net") 
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  branch  Branch    @relation(fields: [branchId], references: [id])
+  payslips Payslip[]
+
+  @@map("payroll_runs")
+}
+
+model Payslip {
+  id            String   @id @default(uuid())
+  payrollRunId  String   @map("payroll_run_id")
+  staffId       String   @map("staff_id")
+  gross         Float  
+  deductions    String     // JSONB object of deductions
+  net           Float  
+  paidAt        DateTime? @map("paid_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  payrollRun PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  staff      Staff      @relation(fields: [staffId], references: [id])
+  viewer     User?      @relation("PayslipViewer", fields: [viewerId], references: [id])
+  viewerId   String?    @map("viewer_id")
+
+  @@map("payslips")
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  staffId   String   @map("staff_id")
+  date      DateTime
+  clockIn   DateTime @map("clock_in")
+  clockOut  DateTime? @map("clock_out")
+  breakMins Int      @default(0) @map("break_mins")
+  status    String   @default("present") // present, late, absent, half_day
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("attendance")
+}
+
+model LeaveRequest {
+  id         String     @id @default(uuid())
+  staffId    String     @map("staff_id")
+  type       String
+  startDate  DateTime   @map("start_date")
+  endDate    DateTime   @map("end_date")
+  reason     String?
+  status     String @default("pending")
+  approvedBy String?    @map("approved_by")
+  approvedAt DateTime?  @map("approved_at")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  staff    Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  approver User? @relation("LeaveApprover", fields: [approvedBy], references: [id])
+
+  @@map("leave_requests")
+}
+
+model Certification {
+  id         String   @id @default(uuid())
+  staffId    String   @map("staff_id")
+  certName   String   @map("cert_name")
+  issuer     String
+  issuedDate DateTime @map("issued_date")
+  expiryDate DateTime? @map("expiry_date")
+  fileUrl    String?  @map("file_url")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("certifications")
+}
+
+model JobPosting {
+  id          String         @id @default(uuid())
+  branchId    String         @map("branch_id")
+  title       String
+  department  String
+  description String
+  requirements String?
+  status      String @default("draft")
+  postedAt    DateTime?      @map("posted_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  branch     Branch       @relation(fields: [branchId], references: [id])
+  applicants Applicant[]
+
+  @@map("job_postings")
+}
+
+model Applicant {
+  id          String        @id @default(uuid())
+  jobPostingId String       @map("job_posting_id")
+  fullName    String        @map("full_name")
+  email       String
+  resumeUrl   String        @map("resume_url")
+  status      String @default("applied")
+  interviewAt DateTime?     @map("interview_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  jobPosting JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  @@map("applicants")
+}
+
+// ============================================
+// SYSTEM TABLES
+// ============================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  action    String   // create, update, delete, login, etc.
+  entity    String   // user, appointment, invoice, etc.
+  entityId  String   @map("entity_id")
+  oldVal    String?    @map("old_val")
+  newVal    String?    @map("new_val")
+  ip        String?
+  timestamp DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String             @id @default(uuid())
+  userId    String             @map("user_id")
+  type      String
+  title     String
+  body      String
+  isRead    Boolean            @default(false) @map("is_read")
+  sentAt    DateTime?          @map("sent_at")
+  channel   String
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

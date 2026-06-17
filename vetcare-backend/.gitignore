@@ -1,0 +1,22 @@
+.vercel
+.env*.local
+.env
+
+# SQLite database files - must NOT be in git (breaks Vercel deployment)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+prisma/dev.db
+prisma/migrations/dev.db
+
+# Build output
+dist/
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store

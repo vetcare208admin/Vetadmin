@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "outputDirectory": "dist",
+    "rewrites": [
+        {
+            "source": "/v1/(.*)",
+            "destination": "/api"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/api"
+        }
+    ]
+}
