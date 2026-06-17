@@ -62,9 +62,9 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
       <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-lg">
         <div className="text-center">
-          <span className="text-5xl">🦅</span>
-          <h2 className="mt-4 text-3xl font-bold text-gray-900">Horus Vet</h2>
-          <p className="mt-2 text-gray-600">Join Horus Vet today</p>
+          <span className="text-5xl">🐾</span>
+          <h2 className="mt-4 text-3xl font-bold text-gray-900">Vet Care</h2>
+          <p className="mt-2 text-gray-600">Join Vet Care today</p>
         </div>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
