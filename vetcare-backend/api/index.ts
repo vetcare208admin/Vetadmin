@@ -11,12 +11,7 @@ export default async (req: any, res: any) => {
         if (req.url && req.url.includes('diag=true')) {
             return res.status(200).json({
                 status: 'diagnostics-v9',
-                node: process.version,
-                env_keys: Object.keys(process.env).filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('PASSWORD')),
-                has_db_url: !!process.env.DATABASE_URL,
-                has_jwt: !!process.env.JWT_SECRET,
-                has_frontend_url: !!process.env.FRONTEND_URL,
-                cwd: process.cwd(),
+                db_url: process.env.DATABASE_URL,
             });
         }
 
