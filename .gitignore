@@ -39,8 +39,8 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 
-# Prisma
-vetcare-backend/prisma/migrations/
+# Prisma — keep migrations in git (required for Vercel deploy)
+# vetcare-backend/prisma/migrations/
 
 # Docker
 docker-compose.override.yml

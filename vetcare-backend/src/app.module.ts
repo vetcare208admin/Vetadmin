@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { envValidationSchema } from './config/env.validation';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
@@ -20,6 +21,7 @@ import { PrismaService } from './prisma/prisma.service';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '.env.local'],
+      validationSchema: envValidationSchema,
     }),
 
     ThrottlerModule.forRoot([
