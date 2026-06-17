@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { authApi } from '../lib/authApi';
 
 interface User {
   id: string;
@@ -15,7 +16,7 @@ interface AuthState {
   isLoading: boolean;
   setUser: (user: User | null) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   setLoading: (loading: boolean) => void;
 }
 
@@ -31,7 +32,7 @@ const getInitialToken = (key: string) => {
   return localStorage.getItem(key);
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: getInitialUser(),
   accessToken: getInitialToken('accessToken'),
   refreshToken: getInitialToken('refreshToken'),
@@ -52,7 +53,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     document.cookie = `session_token=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
     set({ accessToken, refreshToken });
   },
-  logout: () => {
+  logout: async () => {
+    const refreshToken = get().refreshToken;
+    if (refreshToken) {
+      try {
+        await authApi.logout(refreshToken);
+      } catch (error) {
+        console.error('Failed to logout from server:', error);
+      }
+    }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');

@@ -4,6 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vetadmin-vetcare-bac
 
 export const api = axios.create({
   baseURL: API_URL,
+  timeout: 10000, // 10 seconds timeout to prevent infinite hangs
   headers: {
     'Content-Type': 'application/json',
   },
@@ -31,6 +32,11 @@ api.interceptors.response.use(
 
     // If 401 and not already retrying
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Skip interceptor for auth routes to prevent redirect loops during login/refresh
+      if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/refresh')) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       try {

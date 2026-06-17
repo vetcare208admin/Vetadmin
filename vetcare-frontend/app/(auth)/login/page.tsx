@@ -30,29 +30,37 @@ export default function LoginPage() {
       // Redirect based on role
       switch (user.role) {
         case 'CUSTOMER':
-          router.push('/dashboard');
+          window.location.href = '/dashboard';
           break;
         case 'VET_DOCTOR':
-          router.push('/vet/dashboard');
+          window.location.href = '/vet/dashboard';
           break;
         case 'LAB_TECH':
-          router.push('/lab/dashboard');
+          window.location.href = '/lab/dashboard';
           break;
         case 'ACCOUNTANT':
-          router.push('/finance/dashboard');
+          window.location.href = '/finance/dashboard';
           break;
         case 'HR_MANAGER':
-          router.push('/hr/dashboard');
+          window.location.href = '/hr/dashboard';
           break;
         case 'SUPER_ADMIN':
         case 'BRANCH_ADMIN':
-          router.push('/admin/dashboard');
+          window.location.href = '/admin/dashboard';
           break;
         default:
-          router.push('/dashboard');
+          window.location.href = '/dashboard';
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login Error:', err);
+      const responseMessage = err.response?.data?.message;
+      if (err.code === 'ECONNABORTED' || err.message === 'Network Error') {
+        setError('Cannot connect to the server. Please check your internet connection or try again later.');
+      } else if (Array.isArray(responseMessage)) {
+        setError(responseMessage[0] || 'Login failed. Please try again.');
+      } else {
+        setError(responseMessage || 'Login failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
       setLoading(false);
@@ -86,7 +94,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900 bg-white"
                 placeholder="you@example.com"
               />
             </div>
@@ -101,7 +109,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900 bg-white"
                 placeholder="••••••••"
               />
             </div>

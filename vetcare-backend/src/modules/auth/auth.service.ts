@@ -99,7 +99,18 @@ export class AuthService {
     return { message: 'Logged out successfully' };
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
+  async refreshTokens(refreshToken: string) {
+    let payload: any;
+    try {
+      payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const userId = payload.sub;
+
     const storedToken = await this.prisma.refreshToken.findFirst({
       where: { userId, revoked: false },
     });
@@ -114,6 +125,10 @@ export class AuthService {
     }
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('Account is deactivated or not found');
+    }
+
     const tokens = await this.getTokens(user.id, user.role);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
 
