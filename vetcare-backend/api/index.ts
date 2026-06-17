@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from '../src/app.module';
 
 let cachedServer: any;
 
@@ -21,9 +22,6 @@ export default async (req: any, res: any) => {
 
         if (!cachedServer) {
             console.log('--- START BOOTSTRAP ---');
-
-            // Correct path: api/index.ts -> ../src/app.module
-            const { AppModule } = await import('../src/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
