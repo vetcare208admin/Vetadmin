@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
@@ -13,59 +13,68 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  // Only render user-dependent content after client mount to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     logout();
     router.push('/');
   };
 
-  const NavLinks = () => (
-    <>
-      {user?.role === 'VET_DOCTOR' ? (
-        <>
-          <Link href="/vet/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-          <Link href="/vet/schedule" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">My Schedule</Link>
-          <Link href="/vet/patients" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Patients</Link>
-          <Link href="/vet/telemedicine" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Telemedicine</Link>
-          <Link href="/vet/prescriptions" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Prescriptions</Link>
-        </>
-      ) : user?.role === 'LAB_TECH' ? (
-        <>
-          <Link href="/lab/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-          <Link href="/lab/inventory" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Inventory</Link>
-        </>
-      ) : user?.role === 'ACCOUNTANT' ? (
-        <>
-          <Link href="/finance/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-          <Link href="/finance/invoices" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Invoices</Link>
-          <Link href="/finance/expenses" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Expenses</Link>
-        </>
-      ) : user?.role === 'HR_MANAGER' ? (
-        <>
-          <Link href="/hr/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-          <Link href="/hr/staff" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Staff</Link>
-          <Link href="/hr/attendance" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Attendance</Link>
-        </>
-      ) : user?.role === 'SUPER_ADMIN' ? (
-        <>
-          <Link href="/admin/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-          <Link href="/admin/branches" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Branches</Link>
-          <Link href="/admin/users" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Users</Link>
-          <Link href="/admin/audit-logs" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Audit Logs</Link>
-        </>
-      ) : user?.role === 'CUSTOMER' ? (
-        <>
-          <Link href="/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-          <Link href="/appointments" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Appointments</Link>
-          <Link href="/pets" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">My Pets</Link>
-          <Link href="/invoices" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Invoices</Link>
-        </>
-      ) : (
-        <Link href="/" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
-      )}
-    </>
-  );
+  const NavLinks = () => {
+    if (!mounted) return null;
+    return (
+      <>
+        {user?.role === 'VET_DOCTOR' ? (
+          <>
+            <Link href="/vet/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+            <Link href="/vet/schedule" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">My Schedule</Link>
+            <Link href="/vet/patients" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Patients</Link>
+            <Link href="/vet/telemedicine" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Telemedicine</Link>
+            <Link href="/vet/prescriptions" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Prescriptions</Link>
+          </>
+        ) : user?.role === 'LAB_TECH' ? (
+          <>
+            <Link href="/lab/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+            <Link href="/lab/inventory" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Inventory</Link>
+          </>
+        ) : user?.role === 'ACCOUNTANT' ? (
+          <>
+            <Link href="/finance/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+            <Link href="/finance/invoices" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Invoices</Link>
+            <Link href="/finance/expenses" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Expenses</Link>
+          </>
+        ) : user?.role === 'HR_MANAGER' ? (
+          <>
+            <Link href="/hr/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+            <Link href="/hr/staff" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Staff</Link>
+            <Link href="/hr/attendance" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Attendance</Link>
+          </>
+        ) : user?.role === 'SUPER_ADMIN' || user?.role === 'BRANCH_ADMIN' ? (
+          <>
+            <Link href="/admin/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+            <Link href="/admin/branches" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Branches</Link>
+            <Link href="/admin/users" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Users</Link>
+            <Link href="/admin/audit-logs" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Audit Logs</Link>
+          </>
+        ) : user?.role === 'CUSTOMER' ? (
+          <>
+            <Link href="/dashboard" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+            <Link href="/appointments" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Appointments</Link>
+            <Link href="/pets" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">My Pets</Link>
+            <Link href="/invoices" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Invoices</Link>
+          </>
+        ) : (
+          <Link href="/" className="text-gray-600 hover:text-primary-600 py-2 md:py-0">Dashboard</Link>
+        )}
+      </>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
@@ -91,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-4">
-              {user ? (
+              {mounted && user ? (
                 <div className="flex items-center gap-2 sm:gap-4">
                   <span className="hidden lg:inline text-sm text-gray-600 font-medium">{user.email}</span>
                   <button
@@ -101,14 +110,14 @@ export default function Layout({ children }: LayoutProps) {
                     Logout
                   </button>
                 </div>
-              ) : (
+              ) : mounted ? (
                 <Link
                   href="/login"
                   className="px-4 py-2 text-sm text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors font-medium shadow-sm active:scale-95"
                 >
                   Login
                 </Link>
-              )}
+              ) : null}
             </div>
           </div>
 
