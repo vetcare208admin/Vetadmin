@@ -6,34 +6,24 @@ let cachedServer: any;
 
 export default async (req: any, res: any) => {
     try {
-        // DIAGNOSTIC MODE
+        // DIAGNOSTIC MODE - visit ?diag=true to check env vars
         if (req.url && req.url.includes('diag=true')) {
             return res.status(200).json({
-                status: 'diagnostics-v8',
+                status: 'diagnostics-v9',
                 node: process.version,
                 env_keys: Object.keys(process.env).filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('PASSWORD')),
                 has_db_url: !!process.env.DATABASE_URL,
+                has_jwt: !!process.env.JWT_SECRET,
+                has_frontend_url: !!process.env.FRONTEND_URL,
                 cwd: process.cwd(),
-                dir_contents: await (async () => { try { return require('fs').readdirSync('.'); } catch (e) { return e.message; } })()
             });
         }
 
         if (!cachedServer) {
-            console.log('--- START BOOTSTRAP (v8-DIAG) ---');
+            console.log('--- START BOOTSTRAP ---');
 
-            // Resolve relative path based on location
-            let AppModule;
-            try {
-                // Try backend subfolder first (if root)
-                const mod = await import('../vetcare-backend/src/app.module');
-                AppModule = mod.AppModule;
-                console.log('Loaded AppModule from ../vetcare-backend/src/app.module');
-            } catch (e) {
-                // Try local src folder (if in subfolder)
-                const mod = await import('../src/app.module');
-                AppModule = mod.AppModule;
-                console.log('Loaded AppModule from ../src/app.module');
-            }
+            // Correct path: api/index.ts -> ../src/app.module
+            const { AppModule } = await import('../src/app.module');
 
             const app = await NestFactory.create(AppModule, {
                 logger: ['error', 'warn', 'log'],
@@ -47,9 +37,13 @@ export default async (req: any, res: any) => {
                 }),
             );
 
+            // Fix CORS: use actual frontend URL so cookies/credentials work
+            const frontendUrl = process.env.FRONTEND_URL || 'https://vetadmin-vetcare-frontend.vercel.app';
             app.enableCors({
-                origin: '*',
+                origin: frontendUrl,
                 credentials: true,
+                methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+                allowedHeaders: ['Content-Type', 'Authorization'],
             });
 
             app.setGlobalPrefix('v1');
@@ -67,10 +61,9 @@ export default async (req: any, res: any) => {
 
         return res.status(500).json({
             error: 'Backend Initialization Failed',
-            version: 'v8-DIAG',
             message: error.message,
-            stack: error.stack?.split('\n').slice(0, 5),
-            tip: 'Try ?diag=true to see environment details.'
+            stack: error.stack?.split('\n').slice(0, 8),
+            tip: 'Check Vercel env vars: DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, FRONTEND_URL'
         });
     }
 };
