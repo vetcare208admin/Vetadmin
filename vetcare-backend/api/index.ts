@@ -38,7 +38,7 @@ export default async (req: any, res: any) => {
             // Fix CORS: use actual frontend URL so cookies/credentials work
             const frontendUrl = process.env.FRONTEND_URL || 'https://vetadmin-vetcare-frontend.vercel.app';
             app.enableCors({
-                origin: frontendUrl,
+                origin: [frontendUrl, 'http://localhost:3000', 'http://localhost:3001'],
                 credentials: true,
                 methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
                 allowedHeaders: ['Content-Type', 'Authorization'],
