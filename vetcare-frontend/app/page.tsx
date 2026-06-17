@@ -51,6 +51,11 @@ const RoleCard = ({
 
 export default function RoleGateway() {
     const { user } = useAuthStore();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const getDashboardHref = (role: string) => {
         switch (role) {
@@ -87,7 +92,7 @@ export default function RoleGateway() {
                         A unified platform for clinics, laboratories, and pet owners. Choose your portal to begin.
                     </p>
 
-                    {user && (
+                    {mounted && user && (
                         <div className="mt-8">
                             <Link
                                 href={getDashboardHref(user.role)}
